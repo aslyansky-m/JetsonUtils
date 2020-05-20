@@ -36,3 +36,11 @@ sudo -H pip install -U jetson-stats
 #### HW Encode/Decode
 See [Accelerated Gstreamer User Guide.pdf](https://developer.download.nvidia.com/embedded/L4T/r32_Release_v1.0/Docs/Accelerated_GStreamer_User_Guide.pdf?Th_8yVlnzo_EscxSbhZf_Auu019J1CCSx0nTM6syWjq_t9T7wp2WrMqahWYwVZOWyMzJGjAjDQ8S7Zmrc_E88jQ_-07MoNvm3focJriqJ16tG2YYRb04XJLXGwQFH5CFYWo0zjyyWHK8XE17qhq_L4ojHaGPRSeBLHLNw0_pKM4B55J-96U)
 
+## Packages 
+
+#### Offline installation:
+[link](https://askubuntu.com/questions/15211/saving-deb-files-from-repositories-to-a-custom-location-for-installing-offline):
+`sudo apt-get --download-only install packagename`
+
+#### OpenCV
+See [here](https://jkjung-avt.github.io/opencv3-on-tx2/)
