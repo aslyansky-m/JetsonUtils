@@ -11,7 +11,7 @@
 4. had this [issue](https://devtalk.nvidia.com/default/topic/1048803/jetson-tx2/sdk-manager-could-not-detect-target-hardware/4), solved by 
    ```sudo apt purge tlp tlp-rdw``` 
 
-5. flash OS image, then configure the system, then proceed to installing all the packages
+5. flash OS image, then configure the system, then proceed to installing all the package
 
 ## ROS
 
@@ -39,10 +39,18 @@ sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31
 
 # install ROS Base
 sudo apt-get update
-sudo apt-get install ros-melodic-ros-base
+# sudo apt-get install ros-melodic-ros-base
+sudo apt-get install ros-melodic-desktop-full
 
 # add ROS paths to environment
 sudo sh -c 'echo "source /opt/ros/melodic/setup.bash" >> ~/.bashrc'
+```
+Then, [create a workspace](http://wiki.ros.org/catkin/Tutorials/create_a_workspace):
+```
+source /opt/ros/melodic/setup.bash
+mkdir -p ~/catkin_ws/src
+cd ~/catkin_ws/
+catkin_make
 ```
 
 ## RealSense
