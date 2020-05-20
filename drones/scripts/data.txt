@@ -1,0 +1,36 @@
+cd ~/Documents/data/d435i
+rosbag record -O test01_outdoor_night_flash_motions.bag /camera/imu /camera/infra1/image_rect_raw/compressed /camera/infra2/image_rect_raw/compressed
+rosbag record -O test2_room_flash_diffused_50lux_2m.bag /camera/imu /camera/infra1/image_rect_raw/compressed /camera/infra2/image_rect_raw/compressed
+rosbag record -O test3_checkerboard.bag /camera/imu /camera/infra1/image_rect_raw /camera/infra2/image_rect_raw
+
+rosrun image_transport republish compressed in:=/camera/infra1/image_rect_raw raw out:=/camera/infra1/image_rect_uc &
+rosrun image_transport republish compressed in:=/camera/infra2/image_rect_raw raw out:=/camera/infra2/image_rect_uc &
+
+rosrun topic_tools relay /camera/imu /imu0 &
+rosrun topic_tools relay /camera/infra1/image_rect_raw /cam0/image_raw &
+rosrun topic_tools relay /camera/infra1/image_rect_raw /cam1/image_raw &
+
+rosrun image_transport republish compressed in:=/camera/infra1/image_rect_raw raw out:=/cam0/image_raw &
+rosrun image_transport republish compressed in:=/camera/infra2/image_rect_raw raw out:=/cam1/image_raw &
+
+roscore &
+roslaunch realsense2_camera vins_infra.launch
+rosrun loop_fusion loop_fusion_node ~/catkin_ws/src/VINS-Fusion/config/realsense_d435i/realsense_stereo_imu_config.yaml
+rosrun vins vins_node /home/maxima/catkin_ws/src/VINS-Fusion/config/realsense_d435i/realsense_stereo_imu_config.yaml
+rosrun vins vins_node /home/maxima/catkin_ws/src/VINS-Fusion/config/realsense_d435i/realsense_stereo_imu_config_uc.yaml
+roslaunch vins vins_rviz.launch
+
+source ~/catkin_ws/devel/setup.bash
+~/Downloads/clion-2019.3.2/bin/clion.sh
+
+sudo -s
+export PATH=/usr/bin:$PATH; 
+python /home/maxima/Documents/projects/drone_utils/odom_to_path.py
+rosrun tf static_transform_publisher 0 0 0 0 0 0 map camera_odom_frame 10
+roslaunch realsense2_camera vins_t265.launch 
+rosrun rviz rviz -d ~/t265.rviz
+
+
+rosbag record -O test01.bag /camera/imu /camera/fisheye1/image_raw/compressed /camera/fisheye2/image_raw/compressed /camera/odom/sample
+
+

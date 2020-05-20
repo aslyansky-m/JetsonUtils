@@ -1,0 +1,8 @@
+roscore
+rosrun tf static_transform_publisher 0 0 0 0 0 0 map camera_imu_optical_frame 10
+rosrun rviz rviz
+export PATH=/usr/bin:$PATH; rosrun rqt_multiplot rqt_multiplot
+roslaunch realsense2_camera vins_infra.launch
+
+export PATH=/usr/bin:$PATH;
+roslaunch razor_imu_9dof razor-pub-and-display.launch

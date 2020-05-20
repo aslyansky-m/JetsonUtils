@@ -1,0 +1,52 @@
+https://github.com/HKUST-Aerial-Robotics/VINS-Fusion/issues/53
+
+# 1
+
+Here are some suggestions for those who are using D435I
+
+Check the realsense launch file to make sure the resolution of the image is consistent with the VINS-FUSION config file.
+The camera intrinsic parameters are obtained from /camera/infra*/camera_info provided by our realsense. You'd better check yours. If you want to get a good result, you are recommended to calibrate the cameras yourself.
+The rs_camera.launch is used for the ros wrapper based on realsense SDK 2.18.1. For the higher version, some variables' name are changed.
+Do not use the SDK 2.20(both 2.18 and 2.19 are fine), the IMU data will get stuck.
+For a stable estimation result, turn off the IR projector of it.
+
+# 2
+
+I turned off IR projector using realsense-viewer and .json file from it
+and used Kalibr to calibrate it (also tried with your configure file @pjrambo it was fine)
+For me, using Xavier from jetson, Jetpack 4.1.1 SDK version is v2.17.1 and ros wrapper version is v2.1.3
+
+even though i solved it by rebuild catkin workspace,
+but sometimes i reboot the xavier, same error occur again
+
+Please check the firmware version you used. The confing is for SDK2.19. The version of Realsense SDK higher than 2.19 exists some issue with its IMU. You can directly using the config file with SDK 2.19.
+
+
+# 3
+
+Hello 👋🏻 ! Many issues here ....
+First consider switching on the sdk 2.25 and ros corresponding 2.2.8 because they fix many problem on the imu part. Then use the last production firmware 11.2.6.250
+
+-Then do not use their linear interpolation implementation : because as you will be able to see it is buggy ! It is a mixed interpolation between fast and slow stream so as you will be able to see time stamp are messed up !
+
+Then consider using imu_tools to compute Allan parameters of your device : you will have higher value than those provided by the config file in the github repository of vins fusion : impressive
+-Then I will recommend you to use global time flag in the ros node of RealSense to get time of capture instead of time of reception message and better do not use ros node provided by realsense but one called rs4se which makes a good implementation for visual inertial system
+use Kalibr to make the calibration between cameras and camera/imu
+take into account that vins convention seems to wait for a z up body frame in the camera to body projection matrix
+vins is waiting for imu data that is corrected for misalignment and bias, the realsense documentation do state that the operation is performed in the firmware after performing the es-imu-calibration script. But as I could have seen, there is a bug in the correction, so you will have to disable this correction by setting the option “enable motion correction “ and implement it by yourself in the realsense node
+!
+Hopefully it can help anyone
+
+#4
+
+I have just run vins successfully with a realsense D435i camera. Stereo + IMU config is fine.
+The success relies heavily on versions.
+
+As a suggestion, you may try:
+ubuntu 18.04 + ROS melodic (I think 16.04+ROS Kinetic shoud also work)
+Linux kernel 4.15.0-72-generic (5.0 didn't work for me, be sure to reinstall librealsense2-dkms after changing kernel)
+librealsense2 2.19.0-0~realsense0.615
+librealsense2-dev 2.19.0-0~realsense0.615 (2.19.2 didn't work for me)
+librealsense2-dkms 1.3.10-0ubuntu1
+realsense2_camera 2.2.3 (just git checkout 2.2.3 and catkin_make)
+a realsense launch file at https://github.com/mhc994/VINS-Fusion/blob/wz_fly/config/realsense_d435i/vins_infra.launch (I disabled useless depth and color topics)
